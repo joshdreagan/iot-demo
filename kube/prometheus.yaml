@@ -1,0 +1,21 @@
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  name: prometheus
+  labels:
+    prometheus: k8s
+    app: iot-demo
+spec:
+  serviceAccountName: prometheus-k8s
+  serviceMonitorSelector:
+    matchLabels:
+      app: iot-demo
+  alerting: 
+    alertmanagers:
+      - namespace: iot-demo
+        name: alertmanager-main
+        port: web
+  securityContext: {}
+  replicas: 1
+  ruleSelector: {}
+

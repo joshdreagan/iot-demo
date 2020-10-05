@@ -16,12 +16,9 @@
  * limitations under the License.
  */
 
-import java.util.Map;
-
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.kafka.KafkaConstants;
-import org.apache.camel.model.dataformat.JsonLibrary;
 
 public class ArtemisSource extends RouteBuilder {
 
@@ -33,7 +30,8 @@ public class ArtemisSource extends RouteBuilder {
       from("amqp:{{amqp.destination.type:topic}}:{{telemetry.destination.name}}?disableReplyTo=true")
         .routeId("artemisSource")
         .log(LoggingLevel.DEBUG, LOGGER_NAME, "${body}")
-        .setHeader(KafkaConstants.KEY).jsonpath("$.id", String.class)
+        .setHeader(KafkaConstants.KEY).jsonpath("concat($.locationId, \":\" ,$.rigId)", String.class)
+        .log(LoggingLevel.DEBUG, LOGGER_NAME, String.format("Partition Key: ${headers[%s]}", KafkaConstants.KEY))
         .to("kafka:{{telemetry.destination.name}}")
       ;
   }

@@ -49,6 +49,10 @@ public class PushGatewaySink extends RouteBuilder {
 
       from("kafka:{{telemetry.destination.name}}")
         .routeId("pushGatewaySink")
+        .filter()
+          .simple("${body} == ${null} || ${body} == ''")
+          .stop()
+        .end()
         .log(LoggingLevel.DEBUG, LOGGER_NAME, "${body}")
         .unmarshal().json(JsonLibrary.Jackson, Map.class)
         .setProperty("PrometheusJobId").simple("${body[locationId]}")

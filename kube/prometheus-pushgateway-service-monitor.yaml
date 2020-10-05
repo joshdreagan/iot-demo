@@ -1,0 +1,16 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: pushgateway-service-monitor
+  labels:
+    app: iot-demo
+  namespace: iot-demo
+spec:
+  endpoints:
+    - targetPort: 9091
+      interval: 30s
+      honorLabels: true
+  selector:
+    matchLabels:
+      app: iot-demo
+      prometheus/type: pushgateway

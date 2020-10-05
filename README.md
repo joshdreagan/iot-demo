@@ -35,19 +35,29 @@
 - Install the Prometheus Pushgateway
 
   ```
-  oc new-app prom/pushgateway -n iot-demo
+  oc new-app prom/pushgateway -l 'app=iot-demo' -l 'prometheus/type=pushgateway' -n iot-demo
   ```
 
 - Create and configure the Prometheus resources
 
   ```
   oc apply -f ./kube/prometheus.yaml -n iot-demo
-  oc apply -f ./kube/prometheus-gateway-service-monitor.yaml -n iot-demo
+  oc apply -f ./kube/prometheus-pushgateway-service-monitor.yaml -n iot-demo
   ```
 
 ### Grafana
 
-- TODO
+- Install and configure a Grafana instance
+
+  ```
+  oc apply -f ./kube/grafana.yaml -n iot-demo
+  ```
+
+- Using the UI, import the Grafana datasource and dashoard found in the `./grafana/` directory
+
+  ```
+  echo "http://$(oc get route grafana --template='{{.spec.host}}')/"
+  ```
 
 ### Camel K
 
@@ -64,19 +74,19 @@
   - _Don't forget to modify the `ConfigMap` and `Secret` files with your environment settings._
 
   ```
-  oc create configmap artemis-source-configmap --from-file=application.properties=./artemis-source-configmap.properties
-  oc create secret generic artemis-source-secret --from-file=application.properties=./artemis-source-secret.properties
+  oc create configmap artemis-source-configmap --from-file=application.properties=./bridges/artemis-source-configmap.properties
+  oc create secret generic artemis-source-secret --from-file=application.properties=./bridges/artemis-source-secret.properties
   kamel run \
     --namespace iot-demo \
     --configmap artemis-source-configmap \
     --secret artemis-source-secret \
-    ArtemisSource.java
+    ./bridges/ArtemisSource.java
 
-  oc create configmap push-gateway-sink-configmap --from-file=application.properties=./push-gateway-sink-configmap.properties
+  oc create configmap push-gateway-sink-configmap --from-file=application.properties=./bridges/push-gateway-sink-configmap.properties
   kamel run \
     --namespace iot-demo \
     --configmap push-gateway-sink-configmap \
-    PushGatewaySink.java
+    ./bridges/PushGatewaySink.java
   ```
 
 ### Simulator
@@ -86,3 +96,5 @@
   ```
   python simulators/iot/pumpjack/sim.py --location-id field-01 --rig-id pumpjack-01 --broker-username admin --broker-password admin --telemetry-topic 'iot.telemetry' --telemetry-frequency 1 --buffer-timeout 10000 --verbose 'tcp://localhost:1883'
   ```
+
+  - You can run `python simulators/iot/pumpjack/sim.py --help` for more details/options
