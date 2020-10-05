@@ -53,11 +53,13 @@
   oc apply -f ./kube/grafana.yaml -n iot-demo
   ```
 
-- Using the UI, import the Grafana datasource and dashoard found in the `./grafana/` directory
+- Import the Grafana datasource and dashoard found in the `./grafana/` directory. You can either use the Web UI, or the REST API. 
+  
+  - The Web UI can be found at:
 
-  ```
-  echo "http://$(oc get route grafana --template='{{.spec.host}}')/"
-  ```
+    ```
+    echo "http://$(oc get route grafana --template='{{.spec.host}}')/"
+    ```
 
 ### Camel K
 

@@ -19,11 +19,11 @@ def __heartbeat(location_id, rig_id, time):
     return __payload(location_id, rig_id, time, "heartbeat", data)
 
 def __tachometer(location_id, rig_id, time, speed, speed_variance):
-    data = { "rpm": max(0, random.uniform(speed - speed_variance, speed + speed_variance)) }
+    data = { "rpm": random.uniform(max(0, speed - speed_variance), max(0, speed + speed_variance)) }
     return __payload(location_id, rig_id, time, "tachometer", data)
 
 def __piezo(location_id, rig_id, time, frequency, frequency_variance):
-    data = { "vibrationFrequency": max(0, random.uniform(frequency - frequency_variance, frequency + frequency_variance)) }
+    data = { "vibrationFrequency": random.uniform(max(0, frequency - frequency_variance), max(0, frequency + frequency_variance)) }
     return __payload(location_id, rig_id, time, "piezo", data)
 
 @click.command(context_settings={ "max_content_width": shutil.get_terminal_size()[0] })
