@@ -1,4 +1,4 @@
-apiVersion: kafka.strimzi.io/v1beta1
+apiVersion: kafka.strimzi.io/v1beta2
 kind: KafkaTopic
 metadata:
   name: iot.telemetry
@@ -10,8 +10,8 @@ spec:
   config:
     retention.ms: 7200000
     segment.bytes: 1073741824
---- 
-apiVersion: kafka.strimzi.io/v1beta1
+---
+apiVersion: kafka.strimzi.io/v1beta2
 kind: KafkaTopic
 metadata:
   name: iot.events
@@ -23,8 +23,8 @@ spec:
   config:
     retention.ms: 7200000
     segment.bytes: 1073741824
---- 
-apiVersion: kafka.strimzi.io/v1beta1
+---
+apiVersion: kafka.strimzi.io/v1beta2
 kind: KafkaTopic
 metadata:
   name: iot.commands

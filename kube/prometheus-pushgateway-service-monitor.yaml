@@ -12,5 +12,5 @@ spec:
       honorLabels: true
   selector:
     matchLabels:
-      app: iot-demo
+      app: pushgateway
       prometheus/type: pushgateway

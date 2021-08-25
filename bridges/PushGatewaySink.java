@@ -1,8 +1,8 @@
-// camel-k: language=java 
-// camel-k: resource=push-gateway-sink-transform.groovy 
-// camel-k: dependency=camel-jackson 
-// camel-k: dependency=camel-groovy 
-// camel-k: dependency=mvn:io.prometheus/simpleclient_pushgateway:0.9.0
+// camel-k: language=java
+// camel-k: resource=push-gateway-sink-transform.groovy
+// camel-k: dependency=camel-jackson
+// camel-k: dependency=camel-groovy
+// camel-k: dependency=mvn:io.prometheus:simpleclient_pushgateway:0.9.0
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with

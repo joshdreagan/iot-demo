@@ -53,8 +53,8 @@
   oc apply -f ./kube/grafana.yaml -n iot-demo
   ```
 
-- Import the Grafana datasource and dashoard found in the `./grafana/` directory. You can either use the Web UI, or the REST API. 
-  
+- Import the Grafana datasource and dashoard found in the `./grafana/` directory. You can either use the Web UI, or the REST API.
+
   - The Web UI can be found at:
 
     ```
