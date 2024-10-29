@@ -1,0 +1,10 @@
+metadata:
+  name: ${project.artifactId}-configmap
+data:
+  application.yml: |-
+    amqphub.amqp10jms:
+      remote-url: "amqp://localhost:5672"
+    camel.component:
+      kafka.brokers: "my-cluster-kafka-bootstrap.streams.svc.cluster.local:9092"
+    logging.level:
+      com.redhat.examples: "debug"

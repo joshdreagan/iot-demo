@@ -1,0 +1,12 @@
+metadata:
+  name: ${project.artifactId}-configmap
+data:
+  application.yml: |-
+    camel.component:
+      kafka.brokers: "my-cluster-kafka-bootstrap.streams.svc.cluster.local:9092"
+    bridge:
+      sink:
+        host: "pushgateway.metrics.svc.cluster.local"
+        port: 9091
+    logging.level:
+      com.redhat.examples: "debug"

@@ -1,0 +1,27 @@
+management:
+  endpoint:
+    health.enabled: true
+    camelroutes:
+      enabled: true
+      read-only: true
+  endpoints.web.exposure.include: info,health,camelroutes
+
+camel:
+  springboot.name: "push-gateway-sink"
+  component:
+    kafka:
+      brokers: "localhost:9092"
+      group-id: "push-gateway-sink"
+      auto-offset-reset: "earliest"
+      seek-to: "BEGINNING"
+
+bridge:
+  source:
+    name: "iot.telemetry"
+    window: 2500
+  sink:
+    host: "localhost"
+    port: 9091
+
+logging.level:
+  com.redhat.examples: "debug"

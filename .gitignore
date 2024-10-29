@@ -5,8 +5,10 @@
 
 __pycache__/
 
-jkube/*.yml
-jkube/*.yaml
+deployment.yml
+configmap.yml
+secret.yml
+config/
 
 bin/
 tls/

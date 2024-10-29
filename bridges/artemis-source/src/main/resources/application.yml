@@ -1,0 +1,32 @@
+management:
+  endpoint:
+    health.enabled: true
+    camelroutes:
+      enabled: true
+      read-only: true
+  endpoints.web.exposure.include: info,health,camelroutes
+
+amqphub.amqp10jms:
+  remote-url: "amqp://localhost:5672"
+  #username: "admin"
+  #password: "admin"
+
+camel:
+  springboot.name: "artemis-source"
+  component:
+    amqp:
+      acknowledgement-mode-name: "CLIENT_ACKNOWLEDGE"
+      subscription-durable: "true"
+      durable-subscription-name: "artemis-source-subscription"
+      subscription-shared: "true"
+    kafka:
+      brokers: "localhost:9092"
+
+bridge:
+  source:
+    name: "iot.telemetry"
+  sink:
+    name: "iot.telemetry"
+
+logging.level:
+  com.redhat.examples: "debug"
