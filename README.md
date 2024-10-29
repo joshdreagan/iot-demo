@@ -11,92 +11,110 @@
 
 ## Preparing
 
-### AMQ Broker
+```
+export PROJECT_ROOT="$(pwd)"
 
-- Install and run Red Hat AMQ Broker [https://developers.redhat.com/products/amq/hello-world]
+oc new-project streams
+oc new-project metrics
+oc new-project bridges
+```
 
-  - _This should be done outside of OpenShift simulating the "Field Environment"._
+## AMQ Broker
 
-### AMQ Streams
+Install and run Red Hat AMQ Broker [https://developers.redhat.com/products/amq/hello-world]
 
-- Install the AMQ Streams Operator from OperatorHub
+  _This should be done outside of OpenShift simulating the "Field Environment"._
 
-- Create and configure an AMQ Streams cluster
+## AMQ Streams
 
-  ```
-  oc apply -f ./kube/kafka-cluster.yaml -n iot-demo
-  oc apply -f ./kube/kafka-topics.yaml -n iot-demo
-  ```
+Install the AMQ Streams Operator from OperatorHub
 
-### Prometheus
+Create and configure an AMQ Streams cluster
 
-- Install the Prometheus Operator from OperatorHub
+```
+oc -n streams apply -f ./streams/kafka-cluster.yaml
+oc -n streams apply -f ./streams/kafka-topics.yaml
+```
 
-- Install the Prometheus Pushgateway
+## Prometheus & Grafana
 
-  ```
-  oc new-app prom/pushgateway -l 'app=iot-demo' -l 'prometheus/type=pushgateway' -n iot-demo
-  ```
+Install the Prometheus Operator from OperatorHub
 
-- Create and configure the Prometheus resources
+Create and configure the Prometheus resources
 
-  ```
-  oc apply -f ./kube/prometheus.yaml -n iot-demo
-  oc apply -f ./kube/prometheus-pushgateway-service-monitor.yaml -n iot-demo
-  ```
+```
+oc -n metrics new-app prom/pushgateway -l 'app=iot-demo' -l 'prometheus/type=pushgateway'
 
-### Grafana
+oc -n metrics apply -f ./metrics/prometheus.yaml
+oc -n metrics apply -f ./metrics/prometheus-pushgateway-service-monitor.yaml
+```
 
-- Install and configure a Grafana instance
+Install and configure a Grafana instance
 
-  ```
-  oc apply -f ./kube/grafana.yaml -n iot-demo
-  ```
+```
+oc -n metrics apply -f ./metrics/grafana.yaml
+```
 
-- Import the Grafana datasource and dashoard found in the `./grafana/` directory. You can either use the Web UI, or the REST API.
+Import the Grafana datasource and dashoard found in the `./metrics/grafana/` directory. You can either use the Web UI, or the REST API.
 
-  - The Web UI can be found at:
-
-    ```
-    echo "http://$(oc get route grafana --template='{{.spec.host}}')/"
-    ```
-
-### Camel K
-
-- Install the Camel K Operator from OperatorHub
-
-- Configure the Camel K Integration Platform
+  The Web UI can be found at:
 
   ```
-  oc apply -f ./kube/integration-platform.yaml -n iot-demo
+  echo "http://$(oc -n metrics get route grafana --template='{{.spec.host}}')/"
   ```
 
-- Install the Camel K bridge applications
+## Camel Bridges
 
-  - _Don't forget to modify the `ConfigMap` and `Secret` files with your environment settings._
+### Camel Bridges - Artemis Source
 
-  ```
-  oc create configmap artemis-source-configmap --from-file=application.properties=./bridges/artemis-source-configmap.properties
-  oc create secret generic artemis-source-secret --from-file=application.properties=./bridges/artemis-source-secret.properties
-  kamel run \
-    --namespace iot-demo \
-    --configmap artemis-source-configmap \
-    --secret artemis-source-secret \
-    ./bridges/ArtemisSource.java
+Create the `deployment.yml`, and `configmap.yml` files from the available templates, and update them with your values. These files are ignored by Git to prevent checking in personal/user keys or other secrets.
 
-  oc create configmap push-gateway-sink-configmap --from-file=application.properties=./bridges/push-gateway-sink-configmap.properties
-  kamel run \
-    --namespace iot-demo \
-    --configmap push-gateway-sink-configmap \
-    ./bridges/PushGatewaySink.java
-  ```
+```
+pushd $PROJECT_ROOT/bridges/artemis-source
+cp src/main/jkube/deployment.yml.template src/main/jkube/deployment.yml
+cp src/main/jkube/configmap.yml.template src/main/jkube/configmap.yml
+popd
+```
 
-### Simulator
+Build and deploy to OpenShift. _Make sure you're logged in to OpenShift and are currently in the namespace you want to deploy to._
 
-- You can run the Python script to simulate device telemetry being sent to the AMQ Broker
+```
+pushd $PROJECT_ROOT/bridges/artemis-source
+oc project bridges
+mvn -P openshift clean package oc:deploy
+popd
+```
 
-  ```
-  python simulators/iot/pumpjack/sim.py --location-id field-01 --rig-id pumpjack-01 --broker-username admin --broker-password admin --telemetry-topic 'iot.telemetry' --telemetry-frequency 1 --buffer-timeout 10000 --verbose 'tcp://localhost:1883'
-  ```
+### Camel Bridges - Push Gateway Sink
 
-  - You can run `python simulators/iot/pumpjack/sim.py --help` for more details/options
+Create the `deployment.yml`, and `configmap.yml` files from the available templates, and update them with your values. These files are ignored by Git to prevent checking in personal/user keys or other secrets.
+
+```
+pushd $PROJECT_ROOT/bridges/push-gateway-sink
+cp src/main/jkube/deployment.yml.template src/main/jkube/deployment.yml
+cp src/main/jkube/configmap.yml.template src/main/jkube/configmap.yml
+popd
+```
+
+Build and deploy to OpenShift. _Make sure you're logged in to OpenShift and are currently in the namespace you want to deploy to._
+
+```
+pushd $PROJECT_ROOT/bridges/push-gateway-sink
+oc project bridges
+mvn -P openshift clean package oc:deploy
+popd
+```
+
+## Simulator
+
+You can run the Python script to simulate device telemetry being sent to the AMQ Broker
+
+```
+cd $PROJECT_ROOT
+python -m venv .venv
+source .venv/bin/activate
+pip install click paho-mqtt
+python simulators/iot/pumpjack/sim.py --location-id field-01 --rig-id pumpjack-01 --broker-username admin --broker-password admin --telemetry-topic 'iot/telemetry' --telemetry-frequency 1 --buffer-timeout 10000 --verbose 'tcp://localhost:1883'
+```
+
+You can run `python simulators/iot/pumpjack/sim.py --help` for more details/options

@@ -10,12 +10,6 @@ spec:
   serviceMonitorSelector:
     matchLabels:
       app: iot-demo
-  alerting: 
-    alertmanagers:
-      - namespace: iot-demo
-        name: alertmanager-main
-        port: web
   securityContext: {}
   replicas: 1
   ruleSelector: {}
-

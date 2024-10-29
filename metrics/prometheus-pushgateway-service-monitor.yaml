@@ -4,7 +4,6 @@ metadata:
   name: pushgateway-service-monitor
   labels:
     app: iot-demo
-  namespace: iot-demo
 spec:
   endpoints:
     - targetPort: 9091

@@ -31,7 +31,7 @@ def __piezo(location_id, rig_id, time, frequency, frequency_variance):
 @click.option("--rig-id", help="The unique identifier for the rig.")
 @click.option("--broker-username", help="The username for the MQTT broker.")
 @click.option("--broker-password", hide_input=True, prompt=True, confirmation_prompt=True, help="The password for the MQTT broker.")
-@click.option("--telemetry-topic", default="iot.telemetry", show_default=True, help="The topic to send the telemetry data to.")
+@click.option("--telemetry-topic", default="iot/telemetry", show_default=True, help="The topic to send the telemetry data to.")
 @click.option("--telemetry-frequency", type=click.IntRange(min=1, max=None), default=5, show_default=True, help="The frequency (in seconds) of the telemetry messages.")
 @click.option("--buffer-timeout", type=click.IntRange(min=1000, max=None), default=10000, show_default=True, help="The time (in millis) to wait before sending each batch of messages to the MQTT broker.")
 @click.option("--tachometer-enabled", is_flag=True, default=True, show_default=True, help="Whether or not to send tachometer sensor telemetry messages.")
