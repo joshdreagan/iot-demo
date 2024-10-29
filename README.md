@@ -118,3 +118,23 @@ python simulators/iot/pumpjack/sim.py --location-id field-01 --rig-id pumpjack-0
 ```
 
 You can run `python simulators/iot/pumpjack/sim.py --help` for more details/options
+
+## (Optional) Service Interconnect
+
+Initialize the skupper site. _This can be done on any machine with a `skupper` cli client._
+
+```
+skupper -n bridges init --enable-console --console-auth unsecured --enable-flow-collector
+```
+
+Initialize the skupper gateway. _This should be done on the machine hosting AMQ Broker._
+
+```
+# Make sure you're `oc login ...` to the cluster and in the `bridges` namespace.
+skupper gateway init
+skupper gateway expose amq-broker localhost 5672
+```
+
+Edit the `etc/broker.xml` file and change the acceptors to only listen on `localhost` instead of the default `0.0.0.0`. Restart the broker.
+
+Edit the `artemis-source-configmap` and change the `amqphub.amqp10jms.remote-url="amqp://amq-broker:5672"`. Restart the "artemis-source" pod.

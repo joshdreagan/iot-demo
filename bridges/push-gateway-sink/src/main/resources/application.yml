@@ -12,8 +12,6 @@ camel:
     kafka:
       brokers: "localhost:9092"
       group-id: "push-gateway-sink"
-      auto-offset-reset: "earliest"
-      seek-to: "BEGINNING"
 
 bridge:
   source:
